@@ -12,8 +12,8 @@ type ProductsRepository struct {
 	db *sql.DB
 }
 
-func NewProductRepository(db *sql.DB) ProductsRepository {
-	return ProductsRepository{db: db}
+func NewProductRepository(db *sql.DB) *ProductsRepository {
+	return &ProductsRepository{db: db}
 }
 
 func (p *ProductsRepository) GetAllProducts() ([]models.Products, error) {

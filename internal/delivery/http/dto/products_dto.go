@@ -1,6 +1,9 @@
 package dto
 
-import "github.com/google/uuid"
+import (
+	"github.com/abhirup7477/go-inventory-management/internal/domain/models"
+	"github.com/google/uuid"
+)
 
 type CreateProductsRequest struct {
 	ProductName string    `json:"product_name" binding:"required"`
@@ -18,4 +21,24 @@ type ProductsResponse struct {
 	Quantity    int       `json:"quantity"`
 	Status      string    `json:"status"`
 	Description string    `json:"description"`
+}
+
+func ToProductResPonse(p models.Products) ProductsResponse {
+	return ProductsResponse{
+		Id:          p.Id,
+		ProductName: p.ProductName,
+		CategoryId:  p.CategoryId,
+		Cost:        p.Cost,
+		Quantity:    p.Quantity,
+		Status:      p.Status,
+		Description: p.Description,
+	}
+}
+
+func ToProductResponseList(products []models.Products) []ProductsResponse {
+	var res = make([]ProductsResponse, 0, len(products))
+	for _, product := range products {
+		res = append(res, ToProductResPonse(product))
+	}
+	return res
 }
