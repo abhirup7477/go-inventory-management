@@ -1,20 +1,24 @@
 package handlers
 
 import (
+	"context"
 	"errors"
+	"log"
 	"net/http"
 
 	"github.com/abhirup7477/go-inventory-management/internal/delivery/http/dto"
+	"github.com/abhirup7477/go-inventory-management/internal/domain/interfaces"
 	"github.com/abhirup7477/go-inventory-management/internal/usecase"
 	"github.com/gin-gonic/gin"
 )
 
 type TasksHandler struct {
-	uc *usecase.TasksUsecase
+	uc     *usecase.TasksUsecase
+	mailer interfaces.Mailer
 }
 
-func NewTasksHandler(uc *usecase.TasksUsecase) *TasksHandler {
-	return &TasksHandler{uc: uc}
+func NewTasksHandler(uc *usecase.TasksUsecase, m interfaces.Mailer) *TasksHandler {
+	return &TasksHandler{uc: uc, mailer: m}
 }
 
 func (h *TasksHandler) GetTasks(c *gin.Context) {
@@ -39,6 +43,19 @@ func (h *TasksHandler) GetTasks(c *gin.Context) {
 	res["categories"] = dto.ToCategoriesResponseList(categories)
 	res["products"] = dto.ToProductResponseList(products)
 	res["orders"] = dto.ToOrdersResponseList(orders)
+
+	user := c.Request.Header.Get("email")
+	go func(user string) {
+		ctx := context.Background()
+		if user == "" {
+			log.Println("No email id found!")
+		} else {
+			err := h.mailer.SendTasksFetchedEmail(ctx, user)
+			if err != nil {
+				log.Printf("Email failed: %v\n", err)
+			}
+		}
+	}(user)
 
 	c.JSON(http.StatusOK, res)
 }
