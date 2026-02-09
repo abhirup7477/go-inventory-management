@@ -1,7 +1,7 @@
 package usecase
 
 import (
-	customerrors "github.com/abhirup7477/go-inventory-management/internal/domain/customErrors"
+	customerrors "github.com/abhirup7477/go-inventory-management/internal/domain/customerrors"
 	"github.com/abhirup7477/go-inventory-management/internal/domain/interfaces"
 	"github.com/abhirup7477/go-inventory-management/internal/domain/models"
 )

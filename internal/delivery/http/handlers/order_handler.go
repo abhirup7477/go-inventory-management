@@ -6,22 +6,20 @@ import (
 
 	"github.com/abhirup7477/go-inventory-management/internal/delivery/http/dto"
 	customerrors "github.com/abhirup7477/go-inventory-management/internal/domain/customerrors"
-	"github.com/abhirup7477/go-inventory-management/internal/domain/models"
 	"github.com/abhirup7477/go-inventory-management/internal/usecase"
 	"github.com/gin-gonic/gin"
 )
 
-type ProductHandler struct {
-	uc *usecase.ProductUsecase
+type OrderHandler struct {
+	uc *usecase.OrdersUsecase
 }
 
-func NewProductHandler(uc *usecase.ProductUsecase) *ProductHandler {
-	return &ProductHandler{uc: uc}
+func NewOrderHandler(uc *usecase.OrdersUsecase) *OrderHandler {
+	return &OrderHandler{uc: uc}
 }
 
-func (p *ProductHandler) GetAllProducts(c *gin.Context) {
-	var products []models.Products
-	products, err := p.uc.GetProducts()
+func (h *OrderHandler) GetAllOrdersHandlerFunc(c *gin.Context) {
+	orders, err := h.uc.GetOrders()
 	if err != nil {
 		if errors.Is(err, customerrors.ErrNotFound) {
 			c.JSON(http.StatusNotFound, gin.H{
@@ -35,6 +33,6 @@ func (p *ProductHandler) GetAllProducts(c *gin.Context) {
 		return
 	}
 
-	res := dto.ToProductResponseList(products)
+	res := dto.ToOrdersResponseList(orders)
 	c.JSON(http.StatusOK, res)
 }
