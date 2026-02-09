@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"fmt"
 
-	customerrors "github.com/abhirup7477/go-inventory-management/internal/domain/customErrors"
 	"github.com/abhirup7477/go-inventory-management/internal/domain/models"
 )
 
@@ -50,8 +49,5 @@ func (p *ProductsRepository) GetAllProducts() ([]models.Products, error) {
 		products = append(products, product)
 	}
 
-	if len(products) == 0 {
-		return nil, customerrors.ErrNotFound
-	}
 	return products, nil
 }

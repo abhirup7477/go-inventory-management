@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	"github.com/abhirup7477/go-inventory-management/internal/delivery/http/dto"
-	customerrors "github.com/abhirup7477/go-inventory-management/internal/domain/customErrors"
+	customerrors "github.com/abhirup7477/go-inventory-management/internal/domain/customerrors"
 	"github.com/abhirup7477/go-inventory-management/internal/domain/models"
 	"github.com/abhirup7477/go-inventory-management/internal/usecase"
 	"github.com/gin-gonic/gin"
