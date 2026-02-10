@@ -19,7 +19,8 @@ func NewOrderHandler(uc *usecase.OrdersUsecase) *OrderHandler {
 }
 
 func (h *OrderHandler) GetAllOrdersHandlerFunc(c *gin.Context) {
-	orders, err := h.uc.GetOrders()
+	ctx := c.Request.Context()
+	orders, err := h.uc.GetOrders(ctx)
 	if err != nil {
 		if errors.Is(err, customerrors.ErrNotFound) {
 			c.JSON(http.StatusNotFound, gin.H{

@@ -1,6 +1,8 @@
 package usecase
 
 import (
+	"context"
+
 	customerrors "github.com/abhirup7477/go-inventory-management/internal/domain/customerrors"
 	"github.com/abhirup7477/go-inventory-management/internal/domain/interfaces"
 	"github.com/abhirup7477/go-inventory-management/internal/domain/models"
@@ -18,7 +20,7 @@ func NewProductUsecase(p interfaces.ProductsRepo, c interfaces.CategoriesRepo) *
 	}
 }
 
-func (p *ProductUsecase) GetProducts() ([]models.Products, error) {
+func (p *ProductUsecase) GetProducts(ctx context.Context) ([]models.Products, error) {
 	products, err := p.productRepo.GetAllProducts()
 	if len(products) == 0 {
 		return nil, customerrors.ErrNotFound

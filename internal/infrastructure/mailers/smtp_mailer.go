@@ -2,24 +2,47 @@ package mailers
 
 import (
 	"context"
+	"errors"
 	"log"
-	"time"
+	"net/smtp"
+	"os"
+
+	"github.com/joho/godotenv"
 )
 
 type SMTPMailer struct {
-	host string
-	port int
+	username string
+	password string
+	host     string
+	port     string
 }
 
-func NewSMTPMailer(host string, port int) *SMTPMailer {
-	return &SMTPMailer{
-		host: host,
-		port: port,
+func NewSMTPMailer() (*SMTPMailer, error) {
+	if err := godotenv.Load(); err != nil {
+		return nil, errors.New("Error loading .env file")
 	}
+	return &SMTPMailer{
+		username: os.Getenv("SMTP_USERNAME"),
+		password: os.Getenv("SMTP_PASSWORD"),
+		host:     os.Getenv("SMTP_HOST"),
+		port:     os.Getenv("SMTP_PORT"),
+	}, nil
 }
 
-func (s *SMTPMailer) SendTasksFetchedEmail(ctx context.Context, receiver string) error {
-	time.Sleep(time.Second * 2)
-	log.Printf("Tasks being sent to: %s\n", receiver)
+func (s *SMTPMailer) SendTasksFetchedEmail(ctx context.Context, recepient string) error {
+	auth := smtp.PlainAuth("", s.username, s.password, s.host)
+	addr := s.host + ":" + s.port
+	msg := `
+		All Tasks have been retreived for you.
+		You can check now.
+	`
+
+	err := smtp.SendMail(addr, auth, s.username, []string{recepient}, []byte(msg))
+	if err != nil {
+		return err
+	}
+
+	log.Println("Notification email sent to:", recepient)
+
 	return nil
 }
