@@ -1,36 +1,28 @@
 package handlers
 
 import (
-	"context"
 	"errors"
-	"log"
 	"net/http"
 
 	"github.com/abhirup7477/go-inventory-management/internal/delivery/http/dto"
-	"github.com/abhirup7477/go-inventory-management/internal/domain/interfaces"
 	"github.com/abhirup7477/go-inventory-management/internal/usecase"
 	"github.com/gin-gonic/gin"
 )
 
 type TasksHandler struct {
-	uc     *usecase.TasksUsecase
-	mailer interfaces.Mailer
+	uc *usecase.TasksUsecase
 }
 
-func NewTasksHandler(uc *usecase.TasksUsecase, m interfaces.Mailer) *TasksHandler {
-	return &TasksHandler{uc: uc, mailer: m}
+func NewTasksHandler(uc *usecase.TasksUsecase) *TasksHandler {
+	return &TasksHandler{uc: uc}
 }
 
 func (h *TasksHandler) GetTasks(c *gin.Context) {
-	categories, cerr := h.uc.GetCategories()
-	products, perr := h.uc.GetProducts()
-	orders, oerr := h.uc.GetOrders()
+	ctx := c.Request.Context()
+	email := c.Request.Header.Get("email")
+	bundle, err := h.uc.GetAllTasks(ctx, email)
 
-	isCategoriesFound := errors.Is(nil, cerr)
-	isProductsFound := errors.Is(nil, perr)
-	isOrdersFound := errors.Is(nil, oerr)
-
-	if !isCategoriesFound && !isProductsFound && !isOrdersFound {
+	if errors.Is(err, usecase.ErrNotFound) {
 		c.JSON(http.StatusNotFound, gin.H{
 			"status":    "Not found",
 			"error-msg": "No records founds",
@@ -38,24 +30,25 @@ func (h *TasksHandler) GetTasks(c *gin.Context) {
 		return
 	}
 
-	res := make(map[string]interface{})
+	res := gin.H{}
 
-	res["categories"] = dto.ToCategoriesResponseList(categories)
-	res["products"] = dto.ToProductResponseList(products)
-	res["orders"] = dto.ToOrdersResponseList(orders)
+	if bundle.CategoryErr != nil {
+		res["categories"] = "Failed to fetch categories"
+	} else {
+		res["categories"] = dto.ToCategoriesResponseList(bundle.Categories)
+	}
 
-	user := c.Request.Header.Get("email")
-	go func(user string) {
-		ctx := context.Background()
-		if user == "" {
-			log.Println("No email id found!")
-		} else {
-			err := h.mailer.SendTasksFetchedEmail(ctx, user)
-			if err != nil {
-				log.Printf("Email failed: %v\n", err)
-			}
-		}
-	}(user)
+	if bundle.ProductErr != nil {
+		res["products"] = "Failed to fetch products"
+	} else {
+		res["products"] = dto.ToProductResponseList(bundle.Products)
+	}
+
+	if bundle.OrderErr != nil {
+		res["orders"] = "Failed to fetch orders"
+	} else {
+		res["orders"] = dto.ToOrdersResponseList(bundle.Orders)
+	}
 
 	c.JSON(http.StatusOK, res)
 }

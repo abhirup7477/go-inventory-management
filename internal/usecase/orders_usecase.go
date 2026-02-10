@@ -1,6 +1,8 @@
 package usecase
 
 import (
+	"context"
+
 	customerrors "github.com/abhirup7477/go-inventory-management/internal/domain/customerrors"
 	"github.com/abhirup7477/go-inventory-management/internal/domain/interfaces"
 	"github.com/abhirup7477/go-inventory-management/internal/domain/models"
@@ -18,7 +20,7 @@ func NewOrdersUsecase(o interfaces.OrdersRepo, p interfaces.ProductsRepo) *Order
 	}
 }
 
-func (uc *OrdersUsecase) GetOrders() ([]models.Orders, error) {
+func (uc *OrdersUsecase) GetOrders(ctx context.Context) ([]models.Orders, error) {
 	orders, err := uc.orderRepo.GetAllOrders()
 	if len(orders) == 0 {
 		return nil, customerrors.ErrNotFound

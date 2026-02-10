@@ -21,7 +21,8 @@ func NewProductHandler(uc *usecase.ProductUsecase) *ProductHandler {
 
 func (p *ProductHandler) GetAllProducts(c *gin.Context) {
 	var products []models.Products
-	products, err := p.uc.GetProducts()
+	ctx := c.Request.Context()
+	products, err := p.uc.GetProducts(ctx)
 	if err != nil {
 		if errors.Is(err, customerrors.ErrNotFound) {
 			c.JSON(http.StatusNotFound, gin.H{

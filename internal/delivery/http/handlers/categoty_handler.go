@@ -19,7 +19,8 @@ func NewCategoryHandler(uc *usecase.CategoriesUsecase) *CategoryHandler {
 }
 
 func (h *CategoryHandler) GetCaterogiesHandlerFunc(c *gin.Context) {
-	categories, err := h.uc.GetCategories()
+	ctx := c.Request.Context()
+	categories, err := h.uc.GetCategories(ctx)
 	if err != nil {
 		if errors.Is(err, customerrors.ErrNotFound) {
 			c.JSON(http.StatusNotFound, gin.H{

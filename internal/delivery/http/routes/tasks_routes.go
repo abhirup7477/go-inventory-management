@@ -4,20 +4,19 @@ import (
 	"database/sql"
 
 	"github.com/abhirup7477/go-inventory-management/internal/delivery/http/handlers"
-	"github.com/abhirup7477/go-inventory-management/internal/infrastructure/mailers"
+	"github.com/abhirup7477/go-inventory-management/internal/domain/interfaces"
 	"github.com/abhirup7477/go-inventory-management/internal/repository/postgres"
 	"github.com/abhirup7477/go-inventory-management/internal/usecase"
 	"github.com/gin-gonic/gin"
 )
 
-func RegisterTasksRoutes(router *gin.Engine, db *sql.DB) {
+func RegisterTasksRoutes(router *gin.Engine, db *sql.DB, m interfaces.Mailer) {
 	c := postgres.NewCategoriesRepository(db)
 	p := postgres.NewProductRepository(db)
 	o := postgres.NewOrdersRepository(db)
 
-	uc := usecase.NewTasksUsecase(c, p, o)
-	m := mailers.NewSMTPMailer("abhirup7477@gmail.com", 587)
-	h := handlers.NewTasksHandler(uc, m)
+	uc := usecase.NewTasksUsecase(c, p, o, m)
+	h := handlers.NewTasksHandler(uc)
 
 	router.Group("/tasks")
 	{
