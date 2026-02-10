@@ -5,8 +5,10 @@ import (
 	"log"
 
 	"github.com/abhirup7477/go-inventory-management/internal/database"
+	"github.com/abhirup7477/go-inventory-management/internal/delivery/http/midleware"
 	"github.com/abhirup7477/go-inventory-management/internal/delivery/http/routes"
 	"github.com/abhirup7477/go-inventory-management/internal/infrastructure/mailers"
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	_ "github.com/jackc/pgx/v5/stdlib"
 )
@@ -25,6 +27,7 @@ func main() {
 	fmt.Println("Database Connected!")
 
 	router := gin.Default()
+	router.Use(cors.New(midleware.CorsConfig()))
 
 	routes.RegisterProductsRoutes(router, db)
 	routes.RegisterCategoryRoutes(router, db)

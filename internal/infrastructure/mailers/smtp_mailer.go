@@ -32,10 +32,15 @@ func NewSMTPMailer() (*SMTPMailer, error) {
 func (s *SMTPMailer) SendTasksFetchedEmail(ctx context.Context, recepient string) error {
 	auth := smtp.PlainAuth("", s.username, s.password, s.host)
 	addr := s.host + ":" + s.port
-	msg := `
-		All Tasks have been retreived for you.
-		You can check now.
-	`
+
+	msg := ""
+	msg += "From: " + s.username + "\r\n"
+	msg += "To: " + recepient + "\r\n"
+	msg += "Subject: Tasks Fetched\r\n"
+	msg += "Content-Type: text/plain; charset=UTF-8\r\n"
+	msg += "\r\n" // blank line between headers and body
+	msg += "All Tasks have been retrieved for you.\r\n"
+	msg += "You can check now.\r\n"
 
 	err := smtp.SendMail(addr, auth, s.username, []string{recepient}, []byte(msg))
 	if err != nil {
