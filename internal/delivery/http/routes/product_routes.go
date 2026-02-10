@@ -15,8 +15,8 @@ func RegisterProductsRoutes(router *gin.Engine, db *sql.DB) {
 	puc := usecase.NewProductUsecase(p, c)
 	h := handlers.NewProductHandler(puc)
 
-	router.Group("/products")
+	r := router.Group("/inventory/products")
 	{
-		router.GET("/allProducts", h.GetAllProducts)
+		r.GET("/allProducts", h.GetAllProducts)
 	}
 }

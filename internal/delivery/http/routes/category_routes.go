@@ -14,8 +14,8 @@ func RegisterCategoryRoutes(router *gin.Engine, db *sql.DB) {
 	uc := usecase.NewCategoriesUsecase(c)
 	h := handlers.NewCategoryHandler(uc)
 
-	router.Group("/categories")
+	r := router.Group("inventory/categories")
 	{
-		router.GET("/allCategories", h.GetCaterogiesHandlerFunc)
+		r.GET("/allCategories", h.GetCaterogiesHandlerFunc)
 	}
 }
