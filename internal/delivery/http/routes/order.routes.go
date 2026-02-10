@@ -15,8 +15,8 @@ func RegisterOrdersRoutes(router *gin.Engine, db *sql.DB) {
 	uc := usecase.NewOrdersUsecase(o, p)
 	h := handlers.NewOrderHandler(uc)
 
-	router.Group("/orders")
+	r := router.Group("/inventory/orders")
 	{
-		router.GET("/allOrders", h.GetAllOrdersHandlerFunc)
+		r.GET("/allOrders", h.GetAllOrdersHandlerFunc)
 	}
 }

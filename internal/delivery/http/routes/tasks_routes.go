@@ -18,8 +18,8 @@ func RegisterTasksRoutes(router *gin.Engine, db *sql.DB, m interfaces.Mailer) {
 	uc := usecase.NewTasksUsecase(c, p, o, m)
 	h := handlers.NewTasksHandler(uc)
 
-	router.Group("/tasks")
+	r := router.Group("/inventory")
 	{
-		router.GET("/inventory", h.GetTasks)
+		r.GET("/tasks", h.GetTasks)
 	}
 }
